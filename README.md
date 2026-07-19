@@ -6,6 +6,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi)](https://fastapi.tiangolo.com)
 [![Claude AI](https://img.shields.io/badge/Claude-3.5_Sonnet-orange?logo=anthropic)](https://anthropic.com)
 [![Google Sheets](https://img.shields.io/badge/Google_Sheets-API_v4-34A853?logo=googlesheets)](https://developers.google.com/sheets)
+[![Render](https://img.shields.io/badge/Deploy-Render-46E3B7?logo=render)](https://render.com)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](https://docker.com)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
@@ -13,19 +14,184 @@
 
 ## 🎯 What It Does
 
-This platform lets you build intelligent, AI-driven business workflows that connect your tools automatically:
+### The Big Picture — For Everyone
 
-| Trigger | AI Processing | Action |
+Imagine you run a business. Every day your team manually:
+- Reads dozens of emails and decides who should handle them
+- Copies invoice details from PDFs into spreadsheets by hand
+- Schedules meetings by sending emails back and forth
+- Pastes customer information into your CRM one row at a time
+
+**This platform automates all of that using AI.** It watches your business tools (Gmail, Google Sheets, Google Drive, etc.), understands what's happening using AI, and takes the right action — all without anyone lifting a finger.
+
+---
+
+### How It Works — Step by Step
+
+#### 📧 Example 1: A customer sends you an email
+
+```
+Customer emails you
+       ↓
+AI reads the email and decides: "This is a Sales Inquiry"
+       ↓
+Automatically adds the customer to your CRM spreadsheet (Airtable)
+       ↓
+Sends the customer an instant auto-reply
+       ↓
+You get a notification — no manual work needed
+```
+
+#### 🧾 Example 2: An invoice arrives
+
+```
+Invoice PDF lands in your inbox
+       ↓
+AI extracts: vendor name, amount ($40,702), due date (Aug 15)
+       ↓
+Logs it into your Airtable finance tracker automatically
+       ↓
+Emails your finance team: "New invoice from Cloud Services Ltd"
+       ↓
+Everything is recorded — no manual data entry
+```
+
+#### 📊 Example 3: You open Google Sheets
+
+```
+You open a Google Sheet with customer data
+       ↓
+Click ⚡ AI Workflows → "Classify selected rows"
+       ↓
+AI reads each row and adds a category column: "Hot Lead", "Support", etc.
+       ↓
+Or click "AI-fill sheet" → AI generates 10 rows of realistic test data
+       ↓
+No formulas. No manual typing. Done in seconds.
+```
+
+---
+
+### What Each Tool Does (Plain English)
+
+| Tool | What it is | Why we use it |
 |---|---|---|
-| New email arrives | Claude classifies intent | Route to CRM, auto-reply |
-| Invoice uploaded | Claude extracts fields | Log to Airtable, notify team |
-| Meeting requested | Claude parses details | Create Calendar event, send invite |
-| New Drive document | Claude summarises | Post to Slack / notify stakeholders |
-| Row edited in Google Sheets | Claude classifies text | Write category to adjacent column |
-| Google Form submitted | Claude extracts + classifies | Enrich CRM sheet record |
-| Menu click in Google Sheets | Claude generates tabular data | AI-fill sheet with realistic rows |
+| **FastAPI** | The brain of the system — a web server that receives requests and coordinates everything | Fast, reliable, used by Netflix and Uber |
+| **Claude AI** (Anthropic) | An AI that reads text and understands it like a human — classifies emails, extracts invoice fields, generates summaries | The smartest part of every workflow |
+| **Gmail API** | Reads your inbox and sends emails automatically | Triggers workflows from real emails |
+| **Google Calendar API** | Creates and reads calendar events | Schedules meetings without back-and-forth |
+| **Google Drive API** | Reads files from your Drive | Monitors folders for new documents |
+| **Google Sheets API** | Reads and writes spreadsheet data | Your live data dashboard and CRM |
+| **Google Apps Script** | Small scripts that run inside Google Sheets | Adds a custom AI menu right in your spreadsheet |
+| **Airtable** | A spreadsheet-database hybrid — great for CRMs, trackers, project management | Stores structured business data from workflows |
+| **n8n** | A visual workflow builder (like Zapier, but self-hosted and free) | Connects everything without coding |
+| **SQLite / PostgreSQL** | A database that stores your workflows, run history, and settings | The memory of the system |
+| **Docker** | Packages everything so it runs the same on any computer or server | One command to start the whole stack |
 
-**All integrations fall back to demo mode** if API keys aren't configured — the app runs immediately with realistic sample data.
+---
+
+### What You Can Build With This
+
+- 📬 **Email triage system** — AI reads, classifies, and routes every email automatically
+- 🧾 **Invoice processor** — AI extracts data from invoice text and logs it to Airtable
+- 📅 **Meeting scheduler** — AI parses meeting requests and creates calendar events
+- 📊 **Smart CRM** — Google Form submissions are AI-enriched and saved to your sheet
+- 📁 **Document monitor** — New files in Drive are summarised and routed to the right team
+- 🤖 **AI Sheets assistant** — Right-click menu in Google Sheets to classify, summarise, or AI-generate data
+
+---
+
+### What We Are NOT Using (and Why)
+
+| Tool | Status | Reason |
+|---|---|---|
+| **Streamlit** | ❌ Not used | Streamlit is great for data science dashboards but is single-user and not suitable for multi-user business APIs. We use **FastAPI + HTML templates** instead — it's faster, production-ready, and supports real-time APIs. |
+| **Render** | ✅ Added as deployment option | Render is a cloud platform (like Heroku) with a **free tier**. Deployment instructions are in the [Quick Start](#-quick-start) section below. |
+
+---
+
+## 🎭 Demo Mode — Works With Zero API Keys
+
+You can run the **entire platform right now** without creating a single account or entering any API key. Every integration has a built-in demo mode that returns realistic sample data.
+
+| Feature | With Zero API Keys | With Real API Keys |
+|---|---|---|
+| Dashboard UI | ✅ Fully works | ✅ Fully works |
+| All API endpoints | ✅ Return realistic demo data | ✅ Return real data |
+| AI classify / summarise / extract | ✅ Returns demo AI responses | ✅ Real Claude AI responses |
+| Gmail read / send | ✅ Returns 5 sample emails | ✅ Reads your real inbox |
+| Google Calendar | ✅ Returns 3 sample events | ✅ Your real calendar |
+| Google Sheets read/write | ✅ Returns sample spreadsheet data | ✅ Your real spreadsheets |
+| Airtable records | ✅ Returns demo CRM records | ✅ Your real Airtable base |
+| n8n workflows | ✅ Returns demo workflow list | ✅ Your real n8n instance |
+| Workflow execution | ✅ Simulates execution with logs | ✅ Runs real workflow steps |
+| All 28 tests | ✅ Pass completely | ✅ Pass completely |
+
+**To start in demo mode:**
+```bash
+uvicorn app.main:app --reload
+```
+That's it. No `.env` setup needed. Open http://localhost:8000 and explore everything.
+
+---
+
+## 💰 API Keys & Cost — Free vs Paid
+
+All integrations have a **free tier or free alternative**. Here's the full breakdown:
+
+### Claude AI (for AI features)
+
+| Option | Cost | How to get it |
+|---|---|---|
+| **Anthropic Claude** | 💳 Paid (~$3–15 per million tokens) | [console.anthropic.com](https://console.anthropic.com) — add `ANTHROPIC_API_KEY` |
+| **Google Gemini** ⭐ Free | ✅ Free tier (15 req/min, 1M tokens/day) | [aistudio.google.com](https://aistudio.google.com) — get `GEMINI_API_KEY` |
+| **Groq** ⭐ Free | ✅ Completely free (LLaMA 3, Mixtral) | [console.groq.com](https://console.groq.com) — get `GROQ_API_KEY` |
+| **Ollama** ⭐ Free | ✅ Free, runs locally on your computer | [ollama.com](https://ollama.com) — no API key needed |
+
+> 💡 **Recommendation for getting started:** Use **Groq** (100% free, no credit card) or **Google Gemini** (free tier). Both give you real AI responses at zero cost.
+
+### Google Workspace (Gmail, Calendar, Drive, Sheets)
+
+| Cost | Details |
+|---|---|
+| ✅ **Free** | Included with any Google account. Just enable the APIs in [Google Cloud Console](https://console.cloud.google.com). The APIs themselves are free within generous limits. |
+
+**Steps to get free Google API access:**
+```
+1. Go to console.cloud.google.com
+2. Create a project (free)
+3. Enable: Gmail API, Google Calendar API, Google Drive API, Google Sheets API
+4. Create OAuth 2.0 credentials → download as credentials.json
+5. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to .env
+```
+
+### Airtable
+
+| Plan | Cost | Limits |
+|---|---|---|
+| **Free tier** ✅ | $0/month | 5 bases, 1,000 records/base, 1 GB storage |
+| **Team** | $20/month | Unlimited records, more features |
+
+Get your free API key: [airtable.com/create/tokens](https://airtable.com/create/tokens)
+
+### n8n (Workflow Engine)
+
+| Option | Cost | Notes |
+|---|---|---|
+| **Self-hosted** ✅ | Free forever | Runs via Docker in this project (`docker-compose up`) |
+| **n8n Cloud** | Free tier (5 workflows, 5K executions/month) | [n8n.io/cloud](https://n8n.io/cloud) |
+
+### Summary — Getting Started for Free
+
+```
+Step 1: Start in demo mode          → No keys needed, works instantly
+Step 2: Add Google APIs             → Free, just enable in Google Cloud Console  
+Step 3: Add Groq or Gemini AI      → Free, get key in 2 minutes
+Step 4: Add Airtable (optional)    → Free tier available
+Step 5: n8n runs via Docker        → Free, already in docker-compose.yml
+```
+
+**Total cost to run this platform: $0** using free tiers.
 
 ---
 
@@ -280,30 +446,45 @@ docker-compose down
 
 ### Option 3 — VSCode Setup
 
-#### 1. Install recommended extensions
-Open the project in VSCode — you'll see a prompt to **"Install Recommended Extensions"**. Click it, or run manually:
+#### 1. Open the project in VSCode
+
+**Windows (PowerShell):**
+```powershell
+code .
+```
+
+**macOS / Linux:**
 ```bash
 code .
 ```
 
+A popup will appear: **"Do you want to install the recommended extensions?"** — click **Install All**.
+
 Extensions installed automatically from `.vscode/extensions.json`:
-- **Python + Pylance** — IntelliSense, type checking
-- **Ruff** — Fast linting (replaces flake8)
-- **Black Formatter** — Auto-format on save
-- **mypy** — Static type checker
-- **Docker** — Manage containers from sidebar
-- **REST Client** — Test API endpoints from `.http` files
-- **DotENV** — Syntax highlighting for `.env` files
-- **ErrorLens** — Inline error display
+- **Python + Pylance** — IntelliSense, auto-complete, type checking
+- **Ruff** — Fast linting (replaces flake8/pylint)
+- **Black Formatter** — Auto-format your code on save
+- **mypy** — Static type checking as you write
+- **Docker** — Manage containers from the sidebar
+- **REST Client** — Test API endpoints directly from `.http` files
+- **DotENV** — Colour-coded `.env` file syntax
+- **ErrorLens** — See errors inline instead of hovering
 
-#### 2. Select the virtual environment interpreter
+#### 2. Select the Python interpreter (point VSCode to your venv)
+
+**Windows:**
 ```
-Ctrl+Shift+P → Python: Select Interpreter → ./venv/Scripts/python (Windows)
-Ctrl+Shift+P → Python: Select Interpreter → ./venv/bin/python   (macOS/Linux)
+Ctrl+Shift+P  ->  Python: Select Interpreter  ->  .\venv\Scripts\python.exe
 ```
 
-#### 3. Run with VSCode debugger
-Create `.vscode/launch.json` for one-click debug runs:
+**macOS / Linux:**
+```
+Ctrl+Shift+P  ->  Python: Select Interpreter  ->  ./venv/bin/python
+```
+
+#### 3. Add a debug launch config (press F5 to run)
+
+Create `.vscode/launch.json`:
 ```json
 {
   "version": "0.2.0",
@@ -321,38 +502,116 @@ Create `.vscode/launch.json` for one-click debug runs:
 }
 ```
 
-#### 4. Run tests from VSCode
+Press **F5** (or Run → Start Debugging) to launch with full breakpoint debugging.
+
+#### 4. Configure and run tests visually
+
+**macOS / Linux / Windows:**
 ```
-Ctrl+Shift+P → Python: Configure Tests → pytest → tests/
+Ctrl+Shift+P  ->  Python: Configure Tests  ->  pytest  ->  select "tests" folder
 ```
 
-Or from the terminal:
+Click the **Testing** (beaker) icon in the left sidebar to run all 28 tests with a visual pass/fail report.
+
+Or from the integrated terminal:
 ```bash
 pytest tests/ -v
 ```
 
 ---
 
+### Option 4 — GitHub Codespaces (Runs Entirely in Your Browser)
+
+No Python installation, no Docker, no local setup. GitHub spins up a full cloud environment with VSCode built into your browser.
+
+> GitHub gives **60 free hours/month** on the free plan.
+
+#### 1. Open in Codespaces
+
+Go to the GitHub repo page, click the green **Code** button, then the **Codespaces** tab:
+```
+Code button  ->  Codespaces tab  ->  "Create codespace on main"
+```
+
+#### 2. Wait for the environment to build (about 60 seconds)
+
+#### 3. Install dependencies (in the Codespace terminal)
+```bash
+pip install -r requirements.txt
+```
+
+#### 4. Run the server
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+#### 5. Open the app in your browser
+
+Codespaces shows an **"Open in Browser"** popup automatically. Or go to the **Ports** tab at the bottom and click the link next to port `8000`.
+
+---
+
+### Option 5 — Deploy to Render (Free Cloud Hosting)
+
+[Render](https://render.com) hosts your app live on the internet for free. No credit card required for the free tier.
+
+#### 1. Fork this repo on GitHub
+
+#### 2. Sign up at render.com (free, no credit card)
+
+#### 3. Create a new Web Service
+```
+Dashboard  ->  New  ->  Web Service  ->  Connect your GitHub fork
+```
+
+#### 4. Configure the build settings
+
+| Setting | Value |
+|---|---|
+| **Runtime** | Python 3 |
+| **Build Command** | `pip install -r requirements.txt` |
+| **Start Command** | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
+| **Instance Type** | Free |
+
+#### 5. Add your environment variables
+```
+Render Dashboard  ->  Environment tab  ->  add keys from your .env file
+```
+
+#### 6. Click "Create Web Service" and wait for the build
+
+Your app will be live at:
+```
+https://your-app-name.onrender.com
+```
+
+> **Free tier note:** Render sleeps after 15 min of inactivity — the first request after sleep takes ~30s to wake up. Upgrade to Starter ($7/month) for always-on hosting.
+
+---
+
 ### Running Tests
 
+Install dev dependencies first:
 ```bash
 pip install -r requirements-dev.txt
 ```
+
+Run all tests:
 ```bash
 pytest tests/ -v
 ```
 
-Run with coverage report:
+Run with a coverage report:
 ```bash
 pytest tests/ -v --cov=app --cov-report=term-missing
 ```
 
-Run a specific test file:
+Run a single test file:
 ```bash
 pytest tests/test_google_sheets.py -v
 ```
 
-All **28 tests** pass with zero API keys — demo mode fallbacks are used for all integrations.
+All **28 tests** pass with zero API keys — demo mode fallbacks are used for every integration.
 
 ---
 
