@@ -167,46 +167,192 @@ Enterprise-AI-Workflow-Automation/
 
 ## 🚀 Quick Start
 
-### Option 1 — Local (Recommended)
+### Option 1 — Local Development
+
+#### 1. Clone the repository
+```bash
+git clone https://github.com/Enterprise-AI-Soutions/Enterprise-AI-Workflow-Automation.git
+```
 
 ```bash
-# Clone
-git clone https://github.com/Enterprise-AI-Soutions/Enterprise-AI-Workflow-Automation.git
 cd Enterprise-AI-Workflow-Automation
+```
 
-# Setup (creates venv, installs deps, copies .env)
-python scripts/setup.py
+#### 2. Create and activate a virtual environment
 
-# Edit API keys (optional — runs in demo mode without)
-# Windows: notepad .env
-# Linux:   nano .env
+**Windows (PowerShell)**
+```powershell
+python -m venv venv
+```
+```powershell
+venv\Scripts\activate
+```
 
-# Activate venv
-# Windows: venv\Scripts\activate
-# Linux:   source venv/bin/activate
+**macOS / Linux**
+```bash
+python3 -m venv venv
+```
+```bash
+source venv/bin/activate
+```
 
-# Run
+#### 3. Install dependencies
+```bash
+pip install --upgrade pip
+```
+```bash
+pip install -r requirements.txt
+```
+
+#### 4. Set up environment variables
+```bash
+cp .env.example .env
+```
+
+Open `.env` and fill in your API keys. The app runs fully in **demo mode** if you leave them blank.
+
+**Windows (Notepad)**
+```powershell
+notepad .env
+```
+
+**macOS / Linux**
+```bash
+nano .env
+```
+
+#### 5. Run the development server
+```bash
 uvicorn app.main:app --reload
+```
 
-# Seed sample workflows (optional)
+#### 6. (Optional) Seed sample workflow data
+```bash
 python scripts/seed_data.py
 ```
 
-Open:
-- 🖥 Dashboard: http://localhost:8000
-- 📖 API Docs: http://localhost:8000/docs
-- 💚 Health: http://localhost:8000/api/v1/health
+#### 7. Open in browser
 
-### Option 2 — Docker
+| URL | Description |
+|---|---|
+| http://localhost:8000 | 🖥 Interactive Dashboard |
+| http://localhost:8000/docs | 📖 Swagger API Docs |
+| http://localhost:8000/redoc | 📄 ReDoc API Reference |
+| http://localhost:8000/api/v1/health | 💚 Integration Health Check |
+
+---
+
+### Option 2 — Docker (Full Stack)
+
+#### 1. Copy environment file
+```bash
+cp .env.example .env
+```
+
+#### 2. Start all services
+```bash
+docker-compose up --build -d
+```
+
+#### 3. Check all containers are running
+```bash
+docker-compose ps
+```
+
+#### 4. View application logs
+```bash
+docker-compose logs -f app
+```
+
+#### 5. Stop all services
+```bash
+docker-compose down
+```
+
+| Service | URL | Notes |
+|---|---|---|
+| FastAPI App | http://localhost:8000 | Main application |
+| n8n Editor | http://localhost:5678 | `admin` / `changeme` |
+| PostgreSQL | localhost:5432 | Internal only |
+| Redis | localhost:6379 | Internal only |
+
+---
+
+### Option 3 — VSCode Setup
+
+#### 1. Install recommended extensions
+Open the project in VSCode — you'll see a prompt to **"Install Recommended Extensions"**. Click it, or run manually:
+```bash
+code .
+```
+
+Extensions installed automatically from `.vscode/extensions.json`:
+- **Python + Pylance** — IntelliSense, type checking
+- **Ruff** — Fast linting (replaces flake8)
+- **Black Formatter** — Auto-format on save
+- **mypy** — Static type checker
+- **Docker** — Manage containers from sidebar
+- **REST Client** — Test API endpoints from `.http` files
+- **DotENV** — Syntax highlighting for `.env` files
+- **ErrorLens** — Inline error display
+
+#### 2. Select the virtual environment interpreter
+```
+Ctrl+Shift+P → Python: Select Interpreter → ./venv/Scripts/python (Windows)
+Ctrl+Shift+P → Python: Select Interpreter → ./venv/bin/python   (macOS/Linux)
+```
+
+#### 3. Run with VSCode debugger
+Create `.vscode/launch.json` for one-click debug runs:
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FastAPI: Dev Server",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app.main:app", "--reload", "--port", "8000"],
+      "jinja": true,
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
+```
+
+#### 4. Run tests from VSCode
+```
+Ctrl+Shift+P → Python: Configure Tests → pytest → tests/
+```
+
+Or from the terminal:
+```bash
+pytest tests/ -v
+```
+
+---
+
+### Running Tests
 
 ```bash
-cp .env.example .env  # Edit with your keys
-
-docker-compose up --build -d
-
-# App:  http://localhost:8000
-# n8n:  http://localhost:5678 (admin/changeme)
+pip install -r requirements-dev.txt
 ```
+```bash
+pytest tests/ -v
+```
+
+Run with coverage report:
+```bash
+pytest tests/ -v --cov=app --cov-report=term-missing
+```
+
+Run a specific test file:
+```bash
+pytest tests/test_google_sheets.py -v
+```
+
+All **28 tests** pass with zero API keys — demo mode fallbacks are used for all integrations.
 
 ---
 
@@ -300,16 +446,6 @@ Paste the `apps_script/*.gs` files into any Google Sheet for a native **⚡ AI W
 
 ---
 
-## 🧪 Tests
-
-```bash
-pip install -r requirements-dev.txt
-pytest tests/ -v
-```
-
-All **28 tests** pass without any API keys — they use demo mode fallbacks and an in-memory SQLite database.
-
----
 
 ## 📊 n8n Workflow Examples
 

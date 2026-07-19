@@ -1,0 +1,18 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.black-formatter",
+    "charliermarsh.ruff",
+    "ms-python.mypy-type-checker",
+    "ms-azuretools.vscode-docker",
+    "redhat.vscode-yaml",
+    "tamasfe.even-better-toml",
+    "42crunch.vscode-openapi",
+    "humao.rest-client",
+    "mikestead.dotenv",
+    "usernamehw.errorlens",
+    "gruntfuggly.todo-tree",
+    "pkief.material-icon-theme"
+  ]
+}
