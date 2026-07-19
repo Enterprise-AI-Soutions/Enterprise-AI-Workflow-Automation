@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{{ app_name }}{% endblock %}</title>
+    <meta name="description" content="Enterprise AI Workflow Automation Platform" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/main.css" />
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span class="brand-icon">⚡</span>
+            <span class="brand-name">{{ app_name }}</span>
+            <span class="brand-version">v{{ version }}</span>
+        </div>
+        <div class="navbar-links">
+            <a href="/" class="nav-link active">Dashboard</a>
+            <a href="/docs" class="nav-link" target="_blank">API Docs</a>
+            <a href="/redoc" class="nav-link" target="_blank">ReDoc</a>
+            <a href="/api/v1/health" class="nav-link" target="_blank">Health</a>
+        </div>
+        <div class="navbar-env">
+            <span class="env-badge env-{{ env }}">{{ env }}</span>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="/static/js/main.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

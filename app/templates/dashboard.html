@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Enterprise AI Workflow Automation</h1>
+            <p class="hero-subtitle">
+                Orchestrate intelligent business workflows using Claude AI, Google Workspace, Airtable, and n8n.
+            </p>
+            <div class="hero-actions">
+                <a href="/docs" class="btn btn-primary" target="_blank">
+                    <span>📖</span> Explore API
+                </a>
+                <a href="/api/v1/health" class="btn btn-secondary" target="_blank">
+                    <span>💚</span> Health Check
+                </a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="flow-diagram">
+                <div class="flow-node trigger">📧 Trigger</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-node ai">🤖 Claude AI</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-node action">⚡ Action</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats-grid" id="stats">
+        <div class="stat-card" id="stat-workflows">
+            <div class="stat-icon">🔄</div>
+            <div class="stat-value" id="workflows-count">—</div>
+            <div class="stat-label">Workflows</div>
+        </div>
+        <div class="stat-card" id="stat-executions">
+            <div class="stat-icon">▶️</div>
+            <div class="stat-value" id="executions-count">—</div>
+            <div class="stat-label">Executions</div>
+        </div>
+        <div class="stat-card" id="stat-success">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value" id="success-rate">—</div>
+            <div class="stat-label">Success Rate</div>
+        </div>
+        <div class="stat-card" id="stat-integrations">
+            <div class="stat-icon">🔌</div>
+            <div class="stat-value" id="integrations-count">—</div>
+            <div class="stat-label">Integrations</div>
+        </div>
+    </section>
+
+    <!-- Integrations Status -->
+    <section class="section">
+        <h2 class="section-title">Integration Status</h2>
+        <div class="integrations-grid" id="integrations-grid">
+            <div class="integration-card loading">
+                <div class="int-spinner"></div>
+                <span>Loading integrations...</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="section">
+        <h2 class="section-title">Quick Actions</h2>
+        <div class="actions-grid">
+
+            <!-- Test Chat -->
+            <div class="action-card">
+                <div class="action-header">
+                    <span class="action-icon">🤖</span>
+                    <h3>Claude AI Chat</h3>
+                </div>
+                <p class="action-desc">Send a message to Claude AI and see the response.</p>
+                <div class="action-form">
+                    <textarea id="chat-input" class="form-textarea" rows="3" placeholder="Ask Claude anything..."></textarea>
+                    <button class="btn btn-primary btn-sm" onclick="sendChat()">Send →</button>
+                </div>
+                <div class="action-result" id="chat-result"></div>
+            </div>
+
+            <!-- Create Workflow -->
+            <div class="action-card">
+                <div class="action-header">
+                    <span class="action-icon">➕</span>
+                    <h3>Create Workflow</h3>
+                </div>
+                <p class="action-desc">Quickly scaffold a new workflow.</p>
+                <div class="action-form">
+                    <input id="wf-name" class="form-input" placeholder="Workflow name..." />
+                    <select id="wf-trigger" class="form-select">
+                        <option value="manual">Manual</option>
+                        <option value="webhook">Webhook</option>
+                        <option value="schedule">Schedule</option>
+                        <option value="email">Email</option>
+                    </select>
+                    <button class="btn btn-primary btn-sm" onclick="createWorkflow()">Create →</button>
+                </div>
+                <div class="action-result" id="wf-result"></div>
+            </div>
+
+            <!-- AI Classify -->
+            <div class="action-card">
+                <div class="action-header">
+                    <span class="action-icon">🏷️</span>
+                    <h3>AI Text Classifier</h3>
+                </div>
+                <p class="action-desc">Classify text into business categories.</p>
+                <div class="action-form">
+                    <textarea id="classify-input" class="form-textarea" rows="2"
+                        placeholder="Paste any text to classify..."></textarea>
+                    <button class="btn btn-primary btn-sm" onclick="classifyText()">Classify →</button>
+                </div>
+                <div class="action-result" id="classify-result"></div>
+            </div>
+
+            <!-- Gmail Preview -->
+            <div class="action-card">
+                <div class="action-header">
+                    <span class="action-icon">📧</span>
+                    <h3>Gmail Preview</h3>
+                </div>
+                <p class="action-desc">Preview recent emails from your inbox.</p>
+                <div class="action-form">
+                    <button class="btn btn-primary btn-sm" onclick="loadEmails()">Load Emails →</button>
+                </div>
+                <div class="action-result" id="email-result"></div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Workflows Table -->
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Recent Workflows</h2>
+            <button class="btn btn-ghost btn-sm" onclick="loadWorkflows()">Refresh ↻</button>
+        </div>
+        <div class="table-container" id="workflows-table">
+            <div class="loading-state">Loading workflows...</div>
+        </div>
+    </section>
+
+    <!-- API Endpoints Reference -->
+    <section class="section">
+        <h2 class="section-title">API Endpoints</h2>
+        <div class="endpoints-grid">
+            <div class="endpoint-group">
+                <div class="endpoint-group-title">🔄 Workflows</div>
+                <div class="endpoint-item"><span class="method get">GET</span><code>/api/v1/workflows</code></div>
+                <div class="endpoint-item"><span class="method post">POST</span><code>/api/v1/workflows</code></div>
+                <div class="endpoint-item"><span class="method post">POST</span><code>/api/v1/workflows/{id}/execute</code></div>
+                <div class="endpoint-item"><span class="method put">PUT</span><code>/api/v1/workflows/{id}</code></div>
+                <div class="endpoint-item"><span class="method delete">DEL</span><code>/api/v1/workflows/{id}</code></div>
+            </div>
+            <div class="endpoint-group">
+                <div class="endpoint-group-title">🤖 AI — Claude</div>
+                <div class="endpoint-item"><span class="method post">POST</span><code>/api/v1/ai/chat</code></div>
+                <div class="endpoint-item"><span class="method post">POST</span><code>/api/v1/ai/summarize</code></div>
+                <div class="endpoint-item"><span class="method post">POST</span><code>/api/v1/ai/classify</code></div>
+                <div class="endpoint-item"><span class="method post">POST</span><code>/api/v1/ai/extract</code></div>
+                <div class="endpoint-item"><span class="method post">POST</span><code>/api/v1/ai/generate-workflow</code></div>
+            </div>
+            <div class="endpoint-group">
+                <div class="endpoint-group-title">📧 Google Workspace</div>
+                <div class="endpoint-item"><span class="method get">GET</span><code>/api/v1/google/gmail/messages</code></div>
+                <div class="endpoint-item"><span class="method post">POST</span><code>/api/v1/google/gmail/send</code></div>
+                <div class="endpoint-item"><span class="method get">GET</span><code>/api/v1/google/calendar/events</code></div>
+                <div class="endpoint-item"><span class="method post">POST</span><code>/api/v1/google/calendar/events</code></div>
+                <div class="endpoint-item"><span class="method get">GET</span><code>/api/v1/google/drive/files</code></div>
+            </div>
+            <div class="endpoint-group">
+                <div class="endpoint-group-title">🗃️ Airtable</div>
+                <div class="endpoint-item"><span class="method get">GET</span><code>/api/v1/airtable/bases</code></div>
+                <div class="endpoint-item"><span class="method get">GET</span><code>/api/v1/airtable/bases/{id}/tables/{id}/records</code></div>
+                <div class="endpoint-item"><span class="method post">POST</span><code>/api/v1/airtable/bases/{id}/tables/{id}/records</code></div>
+            </div>
+        </div>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const API = '/api/v1';
+
+// Load health / integration status
+async function loadHealth() {
+    try {
+        const res = await fetch(`${API}/health`);
+        const data = await res.json();
+        const integrations = data.integrations;
+        const enabled = Object.values(integrations).filter(i => i.enabled).length;
+        document.getElementById('integrations-count').textContent = `${enabled}/4`;
+
+        const grid = document.getElementById('integrations-grid');
+        grid.innerHTML = Object.entries(integrations).map(([key, val]) => `
+            <div class="integration-card ${val.enabled ? 'connected' : 'demo'}">
+                <div class="int-header">
+                    <span class="int-icon">${intIcon(key)}</span>
+                    <span class="int-name">${intName(key)}</span>
+                    <span class="int-badge ${val.enabled ? 'badge-connected' : 'badge-demo'}">
+                        ${val.enabled ? '● Connected' : '○ Demo Mode'}
+                    </span>
+                </div>
+                ${val.model ? `<div class="int-detail">Model: ${val.model}</div>` : ''}
+                ${val.base_url ? `<div class="int-detail">URL: ${val.base_url}</div>` : ''}
+            </div>
+        `).join('');
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+async function loadStats() {
+    try {
+        const [wfRes, exRes] = await Promise.all([
+            fetch(`${API}/workflows`),
+            fetch(`${API}/executions/stats`)
+        ]);
+        const wf = await wfRes.json();
+        const ex = await exRes.json();
+        document.getElementById('workflows-count').textContent = wf.meta?.total ?? 0;
+        document.getElementById('executions-count').textContent = ex.total ?? 0;
+        document.getElementById('success-rate').textContent = `${ex.success_rate ?? 0}%`;
+    } catch(e) {}
+}
+
+async function loadWorkflows() {
+    try {
+        const res = await fetch(`${API}/workflows?limit=10`);
+        const data = await res.json();
+        const container = document.getElementById('workflows-table');
+        if (!data.data || data.data.length === 0) {
+            container.innerHTML = `<div class="empty-state">No workflows yet. Create one above!</div>`;
+            return;
+        }
+        container.innerHTML = `
+            <table class="data-table">
+                <thead><tr>
+                    <th>Name</th><th>Status</th><th>Trigger</th><th>Steps</th><th>Executions</th><th>Created</th>
+                </tr></thead>
+                <tbody>
+                ${data.data.map(w => `
+                    <tr>
+                        <td><strong>${w.name}</strong>${w.description ? `<br><small>${w.description}</small>` : ''}</td>
+                        <td><span class="status-badge status-${w.status}">${w.status}</span></td>
+                        <td>${w.trigger_type}</td>
+                        <td>${(w.steps || []).length}</td>
+                        <td>${w.execution_count}</td>
+                        <td>${w.created_at ? new Date(w.created_at).toLocaleDateString() : '—'}</td>
+                    </tr>
+                `).join('')}
+                </tbody>
+            </table>
+        `;
+    } catch(e) {
+        document.getElementById('workflows-table').innerHTML = `<div class="error-state">Failed to load workflows.</div>`;
+    }
+}
+
+async function sendChat() {
+    const msg = document.getElementById('chat-input').value.trim();
+    if (!msg) return;
+    const btn = event.target;
+    btn.disabled = true; btn.textContent = 'Thinking...';
+    try {
+        const res = await fetch(`${API}/ai/chat`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message: msg})
+        });
+        const data = await res.json();
+        showResult('chat-result', data.response, data.demo_mode);
+    } catch(e) {
+        showResult('chat-result', 'Error: ' + e.message, false, true);
+    } finally {
+        btn.disabled = false; btn.textContent = 'Send →';
+    }
+}
+
+async function createWorkflow() {
+    const name = document.getElementById('wf-name').value.trim();
+    const trigger = document.getElementById('wf-trigger').value;
+    if (!name) return;
+    try {
+        const res = await fetch(`${API}/workflows`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name, trigger_type: trigger, status: 'draft'})
+        });
+        const data = await res.json();
+        showResult('wf-result', `✅ Created workflow: ${data.name} (${data.id})`, false);
+        document.getElementById('wf-name').value = '';
+        loadWorkflows(); loadStats();
+    } catch(e) {
+        showResult('wf-result', 'Error: ' + e.message, false, true);
+    }
+}
+
+async function classifyText() {
+    const text = document.getElementById('classify-input').value.trim();
+    if (!text) return;
+    try {
+        const res = await fetch(`${API}/ai/classify`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                text,
+                categories: ['Sales Inquiry', 'Support Request', 'Finance', 'HR', 'Engineering', 'Other']
+            })
+        });
+        const data = await res.json();
+        showResult('classify-result',
+            `Category: <strong>${data.category}</strong> (${Math.round((data.confidence||0)*100)}% confidence)\n${data.reasoning||''}`,
+            data.demo_mode);
+    } catch(e) {
+        showResult('classify-result', 'Error: ' + e.message, false, true);
+    }
+}
+
+async function loadEmails() {
+    try {
+        const res = await fetch(`${API}/google/gmail/messages?max_results=3`);
+        const data = await res.json();
+        const html = data.messages.map(m => `
+            <div class="email-preview">
+                <div class="email-subject">${m.subject || '(no subject)'}</div>
+                <div class="email-from">From: ${m.from || '?'}</div>
+                <div class="email-snippet">${m.snippet || ''}</div>
+            </div>
+        `).join('');
+        showResult('email-result', html, data.demo_mode, false, true);
+    } catch(e) {
+        showResult('email-result', 'Error: ' + e.message, false, true);
+    }
+}
+
+function showResult(id, text, isDemo, isError=false, isHtml=false) {
+    const el = document.getElementById(id);
+    el.className = 'action-result ' + (isError ? 'result-error' : 'result-success');
+    if (isDemo) el.className += ' result-demo';
+    if (isHtml) el.innerHTML = text;
+    else el.textContent = text;
+    if (isDemo) el.innerHTML += '<small class="demo-tag"> [demo mode]</small>';
+}
+
+function intIcon(key) {
+    return {claude_ai:'🤖', google_workspace:'📧', airtable:'🗃️', n8n:'⚡'}[key] || '🔌';
+}
+function intName(key) {
+    return {claude_ai:'Claude AI', google_workspace:'Google Workspace', airtable:'Airtable', n8n:'n8n'}[key] || key;
+}
+
+// Init
+loadHealth();
+loadStats();
+loadWorkflows();
+</script>
+{% endblock %}

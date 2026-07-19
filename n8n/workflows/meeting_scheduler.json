@@ -1,0 +1,94 @@
+{
+  "name": "Meeting Scheduler Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "schedule-meeting",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node_meeting_trigger",
+      "name": "Webhook — Schedule Request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://app:8000/api/v1/ai/extract",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "text", "value": "={{ $json.body.request_text }}" },
+            { "name": "fields", "value": ["meeting_title", "participants", "preferred_date", "duration_minutes", "agenda"] }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node_parse_request",
+      "name": "Claude — Parse Meeting Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://app:8000/api/v1/google/calendar/events",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "summary", "value": "={{ $json.fields.meeting_title }}" },
+            { "name": "start", "value": "={{ $json.fields.preferred_date }}" },
+            { "name": "end", "value": "={{ $json.fields.preferred_date }}" },
+            { "name": "attendees", "value": "={{ $json.fields.participants }}" },
+            { "name": "description", "value": "={{ $json.fields.agenda }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node_create_event",
+      "name": "Google Calendar — Create Event",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://app:8000/api/v1/google/gmail/send",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "to", "value": "={{ $json.body.requester_email }}" },
+            { "name": "subject", "value": "✅ Meeting Scheduled: {{ $('Claude — Parse Meeting Request').item.json.fields.meeting_title }}" },
+            { "name": "body", "value": "Your meeting has been scheduled. Calendar invites have been sent to all participants." },
+            { "name": "html", "value": false }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node_confirm_email",
+      "name": "Gmail — Send Confirmation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [700, 300]
+    }
+  ],
+  "connections": {
+    "Webhook — Schedule Request": {
+      "main": [[{ "node": "Claude — Parse Meeting Request", "type": "main", "index": 0 }]]
+    },
+    "Claude — Parse Meeting Request": {
+      "main": [[{ "node": "Google Calendar — Create Event", "type": "main", "index": 0 }]]
+    },
+    "Google Calendar — Create Event": {
+      "main": [[{ "node": "Gmail — Send Confirmation", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": true,
+  "settings": { "executionOrder": "v1" },
+  "tags": ["calendar", "scheduling", "ai"]
+}

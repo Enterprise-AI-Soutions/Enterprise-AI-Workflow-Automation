@@ -1,0 +1,4 @@
+{
+  "text": "INVOICE\n\nInvoice Number: INV-2025-0847\nDate: July 15, 2025\nDue Date: August 15, 2025\n\nBill To:\nAcme Corporation\n123 Main Street\nSan Francisco, CA 94105\n\nFrom:\nCloud Services Ltd\n456 Tech Ave, Austin TX 78701\n\nLine Items:\n- Enterprise Software License (Annual): $24,000.00\n- Professional Services (40 hours @ $250/hr): $10,000.00\n- Support & Maintenance: $3,600.00\n\nSubtotal: $37,600.00\nTax (8.25%): $3,102.00\nTotal Due: $40,702.00\n\nPayment Terms: Net 30\nBank: First National Bank\nAccount: 1234567890\nRouting: 021000021",
+  "fields": ["invoice_number", "vendor", "amount", "due_date", "line_items"]
+}

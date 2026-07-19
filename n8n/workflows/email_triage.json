@@ -1,0 +1,118 @@
+{
+  "name": "Email Triage Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "email-triage",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node_webhook_trigger",
+      "name": "Webhook — New Email",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://app:8000/api/v1/ai/classify",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "text", "value": "={{ $json.body.email_body }}" },
+            { "name": "categories", "value": ["Sales Inquiry", "Support Request", "Finance", "HR", "Spam", "Other"] }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node_claude_classify",
+      "name": "Claude — Classify Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.category }}",
+              "operation": "equals",
+              "value2": "Sales Inquiry"
+            }
+          ]
+        }
+      },
+      "id": "node_route_sales",
+      "name": "Route — Sales?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://app:8000/api/v1/airtable/bases/{{ $env.AIRTABLE_BASE_ID }}/tables/Leads/records",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": {
+                "Email": "={{ $('Webhook — New Email').item.json.body.from }}",
+                "Subject": "={{ $('Webhook — New Email').item.json.body.subject }}",
+                "Category": "={{ $('Claude — Classify Email').item.json.category }}",
+                "Status": "New"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node_airtable_crm",
+      "name": "Airtable — Add to CRM",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [700, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://app:8000/api/v1/google/gmail/send",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "to", "value": "={{ $('Webhook — New Email').item.json.body.from }}" },
+            { "name": "subject", "value": "Re: {{ $('Webhook — New Email').item.json.body.subject }}" },
+            { "name": "body", "value": "Thank you for your inquiry. Our sales team will be in touch within 24 hours." }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node_gmail_reply",
+      "name": "Gmail — Auto Reply",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [700, 400]
+    }
+  ],
+  "connections": {
+    "Webhook — New Email": {
+      "main": [[{ "node": "Claude — Classify Email", "type": "main", "index": 0 }]]
+    },
+    "Claude — Classify Email": {
+      "main": [[{ "node": "Route — Sales?", "type": "main", "index": 0 }]]
+    },
+    "Route — Sales?": {
+      "main": [
+        [{ "node": "Airtable — Add to CRM", "type": "main", "index": 0 }],
+        [{ "node": "Gmail — Auto Reply", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "active": true,
+  "settings": { "executionOrder": "v1" },
+  "tags": ["email", "ai", "crm"]
+}
