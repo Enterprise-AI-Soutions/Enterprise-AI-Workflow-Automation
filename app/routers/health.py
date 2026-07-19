@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 
 from app.config import settings
 from app.services.ai import claude_service
-from app.services.integrations import google_service, airtable_service, n8n_service
+from app.services.integrations import google_service, google_sheets_service, airtable_service, n8n_service
 
 router = APIRouter(prefix="/health", tags=["Health"])
 
@@ -27,6 +27,10 @@ async def health_check():
             "google_workspace": {
                 "enabled": google_service.enabled,
                 "status": "connected" if google_service.enabled else "demo_mode",
+            },
+            "google_sheets": {
+                "enabled": google_sheets_service.enabled,
+                "status": "connected" if google_sheets_service.enabled else "demo_mode",
             },
             "airtable": {
                 "enabled": airtable_service.enabled,

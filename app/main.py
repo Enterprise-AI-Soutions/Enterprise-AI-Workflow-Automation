@@ -21,6 +21,7 @@ from app.routers import (
     executions,
     ai,
     google_workspace,
+    google_sheets,
     airtable,
     n8n,
 )
@@ -49,7 +50,8 @@ app = FastAPI(
     version=settings.APP_VERSION,
     description=(
         "A production-ready AI-powered business workflow automation platform using "
-        "FastAPI, Claude AI, Google Workspace, Airtable, n8n, and Docker."
+        "FastAPI, Claude AI, Google Workspace (Gmail, Calendar, Drive, Sheets), "
+        "Airtable, n8n, Google Apps Script, and Docker."
     ),
     docs_url="/docs",
     redoc_url="/redoc",
@@ -81,6 +83,7 @@ app.include_router(workflows.router, prefix=API_PREFIX)
 app.include_router(executions.router, prefix=API_PREFIX)
 app.include_router(ai.router, prefix=API_PREFIX)
 app.include_router(google_workspace.router, prefix=API_PREFIX)
+app.include_router(google_sheets.router, prefix=API_PREFIX)
 app.include_router(airtable.router, prefix=API_PREFIX)
 app.include_router(n8n.router, prefix=API_PREFIX)
 

@@ -1,0 +1,5 @@
+{
+  "headers": ["Name", "Email", "Company", "Industry", "Revenue", "Status", "Last Contact"],
+  "prompt": "B2B SaaS leads from the US technology sector, mix of startups and enterprises",
+  "rows": 10
+}

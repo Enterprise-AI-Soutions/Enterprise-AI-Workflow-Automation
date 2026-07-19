@@ -1,0 +1,9 @@
+{
+  "values": [
+    ["Name", "Email", "Company", "Status", "Revenue"],
+    ["Alice Johnson", "alice@acme.com", "Acme Corp", "Active", "$50,000"],
+    ["Bob Smith", "bob@globex.com", "Globex Ltd", "Lead", "$0"],
+    ["Carol White", "carol@initech.com", "Initech", "Closed", "$120,000"]
+  ],
+  "value_input_option": "USER_ENTERED"
+}
